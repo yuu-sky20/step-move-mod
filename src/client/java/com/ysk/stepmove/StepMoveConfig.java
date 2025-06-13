@@ -47,4 +47,14 @@ public class StepMoveConfig {
         if (HOLD_PREVENTION_TIME < 50) HOLD_PREVENTION_TIME = 50;
         if (HOLD_PREVENTION_TIME > 500) HOLD_PREVENTION_TIME = 500;
     }
+
+    // json形式で設定を保存
+    public static void save() {
+
+    }
+
+    // json形式で設定を読み込み
+    public static void load() {
+
+    }
 }

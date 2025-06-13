@@ -1,15 +1,15 @@
 {
 	"schemaVersion": 1,
 	"id": "stepmove",
-	"version": "1.0.0",
+	"version": "1.1.1a",
 	"name": "Step Move Mod",
 	"description": "移動キーの連続入力で大きなステップ移動を行うMOD",
 	"authors": [
 		"YSK"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/yourname/yourmod"
+		"homepage": "https://github.com/yuu-sky20/step-move-mod/",
+		"sources": "https://github.com/yuu-sky20/step-move-mod/"
 	},
 	"license": "MIT",
 	"icon": "assets/step-move-mod/icon.png",
@@ -29,7 +29,8 @@
 		"fabricloader": ">=0.16.9",
 		"minecraft": "~1.21.4",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"cloth-config": ">=18.0.145"
 	},
 	"suggests": {
 		"another-mod": "*"

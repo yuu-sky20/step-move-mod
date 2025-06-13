@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"com.ysk.stepmove.StepMoveClient"
+		],
+		"modmenu": [
+			"com.ysk.stepmove.StepMoveModMenu"
 		]
 	},
 	"mixins": [
@@ -30,7 +33,8 @@
 		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*",
-		"cloth-config-fabric": ">=18.0.145"
+		"cloth-config": ">=18.0.145",
+		"modmenu": ">=14.0.0-rc.2"
 	},
 	"suggests": {
 		"another-mod": "*"

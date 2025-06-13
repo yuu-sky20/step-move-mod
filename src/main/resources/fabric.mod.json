@@ -30,7 +30,7 @@
 		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*",
-		"cloth-config": ">=18.0.145"
+		"cloth-config-fabric": ">=18.0.145"
 	},
 	"suggests": {
 		"another-mod": "*"

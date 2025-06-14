@@ -70,38 +70,53 @@ public class StepMoveClient implements ClientModInitializer {
                now - lastPressTime < StepMoveConfig.DOUBLE_TAP_TIMEOUT;
     }
 
-    // ステップ処理
-    private void attemptStep(MinecraftClient client, int key) {
-        var player = client.player;
+private void attemptStep(MinecraftClient client, int key) {
+    var player = client.player;
 
-        // --- 条件チェック ---
-        // スニーク中は無効
-        if (StepMoveConfig.DISABLE_WHILE_SNEAKING && Objects.requireNonNull(player).isSneaking()) return;
-        // 空中では無効
-        if (StepMoveConfig.DISABLE_IN_AIR && !Objects.requireNonNull(player).isOnGround()) return;
-        // クリエイティブモードでは無効
-        if (!StepMoveConfig.ENABLE_IN_CREATIVE && Objects.requireNonNull(player).isCreative()) return;
+    // --- 条件チェック ---
+    // スニーク中は無効
+    if (StepMoveConfig.DISABLE_WHILE_SNEAKING && Objects.requireNonNull(player).isSneaking()) return;
+    // 空中では無効
+    if (StepMoveConfig.DISABLE_IN_AIR && !Objects.requireNonNull(player).isOnGround()) return;
+    // クリエイティブモードでは無効
+    if (!StepMoveConfig.ENABLE_IN_CREATIVE && Objects.requireNonNull(player).isCreative()) return;
 
-        // --- 向きベクトル取得 ---
-        Vec3d stepVec = getStepVector(player, key, StepMoveConfig.STEP_STRENGTH);
+    // --- 向きベクトル取得 ---
+    Vec3d stepVec = getStepVector(player, key, 0); // デフォルト値は使用しないので0を渡す
 
-        // プレイヤーに速度を加える
-        Objects.requireNonNull(player).addVelocity(stepVec.x, 0, stepVec.z);
-        player.velocityModified = true;
+    // プレイヤーに速度を加える
+    if (stepVec.equals(Vec3d.ZERO)) {
+        // ステップが無効な場合は何もしない
+        return;
+    }
+    Objects.requireNonNull(player).addVelocity(stepVec.x, 0, stepVec.z);
+    player.velocityModified = true;
+}
+
+private Vec3d getStepVector(net.minecraft.entity.player.PlayerEntity player, int key, double defaultPower) {
+    Vec3d forward = Objects.requireNonNull(player).getRotationVecClient().normalize();
+    Vec3d right = forward.crossProduct(new Vec3d(0, 1, 0)).normalize();
+    
+    StepMoveConfig.KeyStepConfig config = switch (key) {
+        case GLFW.GLFW_KEY_W -> StepMoveConfig.KEY_STEP_CONFIGS.stepW;
+        case GLFW.GLFW_KEY_S -> StepMoveConfig.KEY_STEP_CONFIGS.stepS;
+        case GLFW.GLFW_KEY_D -> StepMoveConfig.KEY_STEP_CONFIGS.stepD;
+        case GLFW.GLFW_KEY_A -> StepMoveConfig.KEY_STEP_CONFIGS.stepA;
+        default -> null;
+    };
+    
+    // configがnullまたはenabledがfalseの場合、ゼロベクトルを返す
+    if (config == null || !config.enabled) {
+        return Vec3d.ZERO;
     }
 
-    // ステップ方向ベクトルの計算を分離
-    private Vec3d getStepVector(net.minecraft.entity.player.PlayerEntity player, int key, double power) {
-        Vec3d forward = Objects.requireNonNull(player).getRotationVecClient().normalize();
-        Vec3d right = forward.crossProduct(new Vec3d(0, 1, 0)).normalize();
-
-        // キーに応じて方向を決定
-        return switch (key) {
-            case GLFW.GLFW_KEY_W -> forward.multiply(power);
-            case GLFW.GLFW_KEY_S -> forward.multiply(-power);
-            case GLFW.GLFW_KEY_D -> right.multiply(power);
-            case GLFW.GLFW_KEY_A -> right.multiply(-power);
-            default -> Vec3d.ZERO;
-        };
-    }
+    // 有効な場合のみ、対応する方向への移動ベクトルを計算
+    return switch (key) {
+        case GLFW.GLFW_KEY_W -> forward.multiply(config.strength);
+        case GLFW.GLFW_KEY_S -> forward.multiply(-config.strength);
+        case GLFW.GLFW_KEY_D -> right.multiply(config.strength);
+        case GLFW.GLFW_KEY_A -> right.multiply(-config.strength);
+        default -> Vec3d.ZERO;
+    };
+}
 }

@@ -14,8 +14,44 @@ import java.nio.file.Paths;
  */
 public class StepMoveConfig {
 
-    // ステップの強度設定
-    public static double STEP_STRENGTH = 8.0;
+    // ステップの強さとステップの有無を管理するクラス
+    public static class KeyStepConfig {
+        public boolean enabled;
+        public double strength;
+
+        public KeyStepConfig(boolean enabled, double strength) {
+            this.enabled = enabled;
+            this.strength = strength;
+        }
+    }
+
+    // キーごとのステップ設定をまとめて管理するクラス
+    public static class KeyStepConfigs {
+        public KeyStepConfig stepW;
+        public KeyStepConfig stepA;
+        public KeyStepConfig stepS;
+        public KeyStepConfig stepD;
+
+        public KeyStepConfigs() {
+            // デフォルト値で初期化
+            this.stepW = new KeyStepConfig(true, 5.0);
+            this.stepA = new KeyStepConfig(true, 4.0);
+            this.stepS = new KeyStepConfig(true, 10.0);
+            this.stepD = new KeyStepConfig(true, 4.0);
+        }
+
+        // すべてのキー設定を配列として取得するメソッド
+        public KeyStepConfig[] getAllConfigs() {
+            KeyStepConfig[] configs = new KeyStepConfig[]{stepW, stepA, stepS, stepD};
+            if (configs[0] == null || configs[1] == null || configs[2] == null || configs[3] == null) {
+                return new KeyStepConfig[0];
+            }
+            return configs;
+        }
+    }
+
+    // StepMoveConfigクラス内での使用
+    public static KeyStepConfigs KEY_STEP_CONFIGS = new KeyStepConfigs();
 
     // ダブルタップのタイムアウト（ミリ秒）
     public static long DOUBLE_TAP_TIMEOUT = 300;
@@ -40,7 +76,7 @@ public class StepMoveConfig {
      */
     @SuppressWarnings("unused")
     public static void resetToDefaults() {
-        STEP_STRENGTH = 2.0;
+        KEY_STEP_CONFIGS = new KeyStepConfigs();
         DOUBLE_TAP_TIMEOUT = 300;
         HOLD_PREVENTION_TIME = 100;
         DISABLE_WHILE_SNEAKING = true;
@@ -52,8 +88,12 @@ public class StepMoveConfig {
      * 設定の妥当性チェック
      */
     public static void validateSettings() {
-        if (STEP_STRENGTH < 0) STEP_STRENGTH = 0;
-        if (STEP_STRENGTH > 10) STEP_STRENGTH = 10;
+        // 各キーのステップ設定をチェック
+        for (KeyStepConfig config : KEY_STEP_CONFIGS.getAllConfigs()) {
+            if (config.strength < 0) config.strength = 0; // 負の値は無効
+            if (config.strength > 10) config.strength = 10; // 上限を設定
+        }
+
         if (DOUBLE_TAP_TIMEOUT < 100) DOUBLE_TAP_TIMEOUT = 100;
         if (DOUBLE_TAP_TIMEOUT > 1000) DOUBLE_TAP_TIMEOUT = 1000;
         if (HOLD_PREVENTION_TIME < 50) HOLD_PREVENTION_TIME = 50;
@@ -66,7 +106,7 @@ public class StepMoveConfig {
             Files.createDirectories(CONFIG_PATH.getParent());
 
             StepMoveConfigData data = new StepMoveConfigData(
-                    STEP_STRENGTH,
+                    KEY_STEP_CONFIGS,
                     DOUBLE_TAP_TIMEOUT,
                     HOLD_PREVENTION_TIME,
                     DISABLE_WHILE_SNEAKING,
@@ -94,7 +134,7 @@ public class StepMoveConfig {
         try (Reader reader = new FileReader(CONFIG_PATH.toFile())) {
             StepMoveConfigData data = GSON.fromJson(reader, StepMoveConfigData.class);
 
-            STEP_STRENGTH = data.stepStrength;
+            KEY_STEP_CONFIGS = (data.keyStepConfigs != null) ? data.keyStepConfigs : new KeyStepConfigs();
             DOUBLE_TAP_TIMEOUT = data.doubleTapTimeout;
             HOLD_PREVENTION_TIME = data.holdPreventionTime;
             DISABLE_WHILE_SNEAKING = data.disableWhileSneaking;
@@ -108,16 +148,16 @@ public class StepMoveConfig {
 
     // 内部クラス：データ構造
     private static class StepMoveConfigData {
-        double stepStrength;
+        KeyStepConfigs keyStepConfigs;
         long doubleTapTimeout;
         long holdPreventionTime;
         boolean disableWhileSneaking;
         boolean disableInAir;
         boolean enableInCreative;
 
-        StepMoveConfigData(double stepStrength, long doubleTapTimeout, long holdPreventionTime,
+        StepMoveConfigData(KeyStepConfigs keyStepConfigs, long doubleTapTimeout, long holdPreventionTime,
                            boolean disableWhileSneaking, boolean disableInAir, boolean enableInCreative) {
-            this.stepStrength = stepStrength;
+            this.keyStepConfigs = keyStepConfigs;
             this.doubleTapTimeout = doubleTapTimeout;
             this.holdPreventionTime = holdPreventionTime;
             this.disableWhileSneaking = disableWhileSneaking;

@@ -38,6 +38,7 @@ public class StepMoveConfig {
     /**
      * 設定をデフォルト値にリセット
      */
+    @SuppressWarnings("unused")
     public static void resetToDefaults() {
         STEP_STRENGTH = 2.0;
         DOUBLE_TAP_TIMEOUT = 300;

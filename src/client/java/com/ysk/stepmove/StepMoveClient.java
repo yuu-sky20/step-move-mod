@@ -38,6 +38,11 @@ public class StepMoveClient implements ClientModInitializer {
                 processKeyInput(client, key, keyStates.get(key));
             }
         });
+
+        // 設定の読み込み
+        StepMoveConfig.load();
+        // 設定の妥当性チェック
+        StepMoveConfig.validateSettings();
     }
 
     // キー入力の処理を分離

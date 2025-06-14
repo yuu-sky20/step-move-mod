@@ -1,12 +1,18 @@
 # step-move-mod
 
 ## What is this?
-This is a simple mod for the game Step that allows you to move around the map using the arrow keys. It is a very basic mod that does not add any new features or functionality to the game, but it does allow you to move around the map without having to use the mouse.
+This is a mod for Minecraft.
+It expands the system and enables fast step movement by double-tapping the movement keys.
 
 ## How to install
 1. Download the mod from the [releases page](https://github.com/yuu-sky20/step-move-mod/releases/latest)
 2. Extract the contents of the zip file to the `mods` folder in your Step installation directory.
 3. Launch Step and the mod should be loaded automatically.
+
+## Dependence Mods
+- [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+- [Cloth Config API](https://www.curseforge.com/minecraft/mc-mods/cloth-config)
+- [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu)
 
 ## How to use
 Use the arrow keys to move around the map. The mod will automatically update the position of the player on the map as you move.

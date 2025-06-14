@@ -34,8 +34,7 @@
 		"java": ">=21",
 		"fabric-api": "*",
 		"cloth-config": ">=18.0.145",
-		"modmenu": ">=14.0.0-rc.2",
-		"gson": ">=2.10.1"
+		"modmenu": ">=14.0.0-rc.2"
 	},
 	"suggests": {
 		"another-mod": "*"

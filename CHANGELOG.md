@@ -23,7 +23,8 @@
   - Added `gson` as a dependency.
 
 ### [v1.2.0] - 2025-06-14
-- #### TODO
-  - Allow individual settings to be assigned to each WASD key.
+- #### Added
+  - Implemented processing to assign individual settings to each WASD key.
     - Speed Control
     - Toggle Step Move
+    - Add Mode Menu Setting Panel

@@ -17,7 +17,7 @@
   - Saving, loading, and initializing settings are not yet implemented.
 
 ### [v1.1.2b] - 2025-06-14
-- #### TODO
-  - Implement saving, loading, and initializing settings.
+- #### Added
+  - Implemented saving, loading.
 - #### Dependencies
   - Added `gson` as a dependency.

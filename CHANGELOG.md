@@ -18,6 +18,6 @@
 
 ### [v1.1.2b] - 2025-06-14
 - #### Added
-  - Implemented saving, loading.
+  - Implemented saving, loading, and initializing settings.
 - #### Dependencies
   - Added `gson` as a dependency.

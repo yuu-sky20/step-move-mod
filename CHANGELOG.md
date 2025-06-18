@@ -28,3 +28,7 @@
     - Speed Control
     - Toggle Step Move
     - Add Mode Menu Setting Panel
+
+### [v1.3.0a] - 2025-06-19
+- #### TODO
+  - Add a feature that allows you to move 50 blocks forward when you right-click on a book.

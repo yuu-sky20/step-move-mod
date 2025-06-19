@@ -28,3 +28,17 @@
     - Speed Control
     - Toggle Step Move
     - Add Mode Menu Setting Panel
+
+### [v1.3.0] - 2025-06-19
+- #### Added
+  - ##### Using a Book Item
+    - Add a feature that allows you to move 50 blocks forward when you right-click on a book.
+
+### [v1.3.1] - 2025-06-19
+- #### Changed
+  - ##### Using a Book Item
+    - Change the number of moves from 50 to 100 blocks.
+- #### Added
+  - ##### Using a Book Item
+    - Wait indefinitely in midair after jumping.
+    - It will be canceled if you move or sneak.

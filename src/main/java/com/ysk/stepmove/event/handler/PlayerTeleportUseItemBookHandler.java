@@ -1,5 +1,6 @@
 package com.ysk.stepmove.event.handler;
 
+import com.ysk.stepmove.event.tracker.PlayerTeleportTracker;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
@@ -25,7 +26,7 @@ public class PlayerTeleportUseItemBookHandler {
 
             Vec3d start = player.getEyePos();
             Vec3d direction = player.getRotationVec(1.0F);
-            Vec3d end = start.add(direction.multiply(50));
+            Vec3d end = start.add(direction.multiply(100));
 
             BlockHitResult hitResult = world.raycast(new RaycastContext(
                     start, end,
@@ -48,6 +49,10 @@ public class PlayerTeleportUseItemBookHandler {
                     1.0F,
                     1.0F
             );
+
+            if (player instanceof ServerPlayerEntity) {
+                PlayerTeleportTracker.startHovering((ServerPlayerEntity) player);
+            }
 
             return ActionResult.SUCCESS;
         });

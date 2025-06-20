@@ -53,3 +53,12 @@
 - #### Fixed
   - ##### PlayerTeleportUseItemBookHandler
     - Fixed a bug where teleportation would not stop properly in midair.
+
+### [v1.3.2-2] - 2025-06-19
+- #### Refactored
+  - ##### `PlayerTeleportTracker` -> `HoverTracker`
+    - Changed confusing class names.
+    - Separate the `HoverState class` from `HoverTracker`.
+  - ##### `PlayerTeleportUseItemBookHandler` -> `BookTeleportHandler`
+    - Changed to a shorter class name.
+

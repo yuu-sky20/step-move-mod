@@ -1,6 +1,6 @@
 package com.ysk.stepmove.event.tracker;
 
-import net.minecraft.particle.ParticleTypes;
+import com.ysk.stepmove.event.model.HoverState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -10,9 +10,9 @@ import net.minecraft.particle.DustColorTransitionParticleEffect;
 import java.awt.*;
 import java.util.*;
 
-public class PlayerTeleportTracker {
+public class HoverTracker {
     // 高度を記録しておく（UUID → y座標）
-    public static final Map<UUID, PlayerState> hoveringPlayers = new HashMap<>();
+    public static final Map<UUID, HoverState> hoveringPlayers = new HashMap<>();
 
     private static final DustColorTransitionParticleEffect particle = new DustColorTransitionParticleEffect(
             Color.MAGENTA.getRed(),
@@ -21,11 +21,11 @@ public class PlayerTeleportTracker {
     );
 
     public static void tick(ServerWorld world) {
-        Iterator<Map.Entry<UUID, PlayerState>> it = hoveringPlayers.entrySet().iterator();
+        Iterator<Map.Entry<UUID, HoverState>> it = hoveringPlayers.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<UUID, PlayerState> entry = it.next();
+            Map.Entry<UUID, HoverState> entry = it.next();
             UUID uuid = entry.getKey();
-            PlayerState state = entry.getValue();
+            HoverState state = entry.getValue();
 
             ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(uuid);
             if (player == null || !player.isAlive()) {
@@ -42,7 +42,7 @@ public class PlayerTeleportTracker {
 
             player.fallDistance = 0.0F;
 
-            state.lastPos = player.getPos();
+            state.setLastPos(player.getPos());
 
             world.spawnParticles(
                     particle,
@@ -58,17 +58,8 @@ public class PlayerTeleportTracker {
         player.setNoGravity(true);
         player.setVelocity(Vec3d.ZERO);
         player.velocityModified = true;
-        hoveringPlayers.put(player.getUuid(), new PlayerState(player.getPos()));
+        hoveringPlayers.put(player.getUuid(), new HoverState(player.getPos()));
     }
 
-    private static class PlayerState {
-        private Vec3d lastPos;
-        public PlayerState(Vec3d lastPos) {
-            this.lastPos = lastPos;
-        }
-        public boolean isPlayerMoved(Vec3d nowPos) {
-            return !lastPos.equals(nowPos);
-        }
-    }
 }
 

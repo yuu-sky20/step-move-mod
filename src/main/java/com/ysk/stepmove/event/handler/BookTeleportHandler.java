@@ -1,6 +1,6 @@
 package com.ysk.stepmove.event.handler;
 
-import com.ysk.stepmove.event.tracker.PlayerTeleportTracker;
+import com.ysk.stepmove.event.tracker.HoverTracker;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
-public class PlayerTeleportUseItemBookHandler {
+public class BookTeleportHandler {
 
     public static void register() {
         UseItemCallback.EVENT.register((PlayerEntity player, World world, Hand hand) -> {
@@ -51,7 +51,7 @@ public class PlayerTeleportUseItemBookHandler {
             );
 
             if (player instanceof ServerPlayerEntity) {
-                PlayerTeleportTracker.startHovering((ServerPlayerEntity) player);
+                HoverTracker.startHovering((ServerPlayerEntity) player);
             }
 
             return ActionResult.SUCCESS;

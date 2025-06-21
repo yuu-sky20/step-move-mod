@@ -6,8 +6,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
-import javax.sound.midi.Soundbank;
-
 public class SoundEffectPlayer {
     public static void playTransportSound(@NotNull ServerPlayerEntity player) {
         ServerWorld world = (ServerWorld) player.getWorld();

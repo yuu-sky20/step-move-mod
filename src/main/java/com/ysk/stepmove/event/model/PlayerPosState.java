@@ -2,7 +2,7 @@ package com.ysk.stepmove.event.model;
 
 import net.minecraft.util.math.Vec3d;
 
-public class HoverState {
+public class PlayerPosState {
     // 最後に記録したプレイヤーの位置
     private Vec3d lastPos;
 
@@ -12,7 +12,7 @@ public class HoverState {
     }
 
     // コンストラクタ（初期位置を記録）
-    public HoverState(Vec3d lastPos) {
+    public PlayerPosState(Vec3d lastPos) {
         this.lastPos = lastPos;
     }
 

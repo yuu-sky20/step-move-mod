@@ -1,6 +1,7 @@
 package com.ysk.stepmove;
 
 import com.ysk.stepmove.event.tracker.HoverTracker;
+import com.ysk.stepmove.event.tracker.SneakTracker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ public class StepMoveMod implements ModInitializer {
 			if (!world.isClient) {
 				// HoverTrackerのティックを実行
 				HoverTracker.tick(world);
+				// SneakTrackerのティックを実行
+				SneakTracker.tick(world);
 			}
 		});
 

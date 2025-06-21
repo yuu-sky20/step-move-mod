@@ -6,8 +6,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -39,19 +37,7 @@ public class BookTeleportHandler {
 
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 serverPlayer.requestTeleport(teleportPos.x, teleportPos.y, teleportPos.z);
-            }
-
-            world.playSound(
-                    null,
-                    player.getBlockPos(),
-                    SoundEvents.ENTITY_ENDERMAN_TELEPORT,
-                    SoundCategory.PLAYERS,
-                    1.0F,
-                    1.0F
-            );
-
-            if (player instanceof ServerPlayerEntity) {
-                HoverTracker.startHovering((ServerPlayerEntity) player);
+                HoverTracker.startHovering(serverPlayer);
             }
 
             return ActionResult.SUCCESS;

@@ -6,13 +6,15 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
+import javax.sound.midi.Soundbank;
+
 public class SoundEffectPlayer {
     public static void playTransportSound(@NotNull ServerPlayerEntity player) {
         ServerWorld world = (ServerWorld) player.getWorld();
         world.playSound(
                 null,
                 player.getX(), player.getY(), player.getZ(),
-                SoundEvents.BLOCK_PORTAL_TRAVEL,
+                SoundEvents.ENTITY_ENDERMAN_TELEPORT,
                 SoundCategory.PLAYERS,
                 1.0f, 1.0f
         );
@@ -22,7 +24,7 @@ public class SoundEffectPlayer {
         world.playSound(
                 null,
                 player.getX(), player.getY(), player.getZ(),
-                SoundEvents.BLOCK_PORTAL_AMBIENT,
+                SoundEvents.UI_HUD_BUBBLE_POP,
                 SoundCategory.PLAYERS,
                 1.0f, 1.0f
         );

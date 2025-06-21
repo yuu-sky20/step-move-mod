@@ -1,4 +1,4 @@
-package com.ysk.stepmove.event.util;
+package com.ysk.stepmove.util;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;

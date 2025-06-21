@@ -62,3 +62,16 @@
   - ##### `PlayerTeleportUseItemBookHandler` -> `BookTeleportHandler`
     - Changed to a shorter class name.
 
+### [v1.3.3] - 2025-06-20
+- #### Fixed
+  - `HoverTracker`
+    - Fixed a new bug where the hover state would not be reset when the player teleports.
+  - `BookTeleportHandler`
+    - Removed the process of playing sound effects.
+- #### Refactored
+  - Added a new `SoundEffectPlayer` class
+    - Split the process of playing sound effects from HoverTracker into SoundEffectPlayer.
+- #### Added
+  - `SneakTracker`
+    - Added a feature that activates hover when sneaking.
+    - Registered as an event handler for `StepMoveMod`.

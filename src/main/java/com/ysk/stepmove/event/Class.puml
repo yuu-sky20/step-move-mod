@@ -1,0 +1,118 @@
+@startuml
+
+package event {
+
+    package "tracker" {
+        package "state" {
+            class "LastPosState" {
+                -MAX_MOVE_DISTANCE
+                -Vec3d lastPos
+                +setLastPos()
+                #isPlayerMoved()
+            }
+            class "HoverState" {
+                -State hoverState
+                +isHoveringState()
+                +isPlayerMovedOnHovering()
+                +setHoveringState()
+                +setIdleState()
+            }
+            class "SneakState" {
+                -State sneakState
+                +isSneakingState()
+                +isIdleState()
+                +setSneakingState()
+                +setIdleState()
+            }
+        }
+        package "common" {
+            class "ValidateTrackPlayer" {
+                +validateTrackedPlayer()
+            }
+        }
+
+        class "HoverTracker" {
+            +tick()
+        }
+        class "SneakTracker" {
+            +tick()
+        }
+    }
+
+    package "handler" {
+        class "UseItemBookHandler" {
+            +register()
+        }
+        class "HoverHandler" {
+            +stopHovering()
+            +updatePlayerStateOnHovering()
+        }
+    }
+
+    package "service" {
+        interface "TeleportService" {
+            teleportPlayer()
+        }
+        class "TeleportAfterHoverService" {
+            +teleportPlayer()
+        }
+        interface "HoverService" {
+            startHovering()
+            stopHovering()
+        }
+        class "PlayerHoverService" {
+            +startHovering()
+            +stopHovering()
+        }
+    }
+
+    package "notifier" {
+        class "HoverTrackerNotifier" {
+            +notifyStartHovering()
+        }
+    }
+
+    package "util" {
+        class "Physics" {
+            +teleportPlayer()
+            +startHovering()
+            +stopHovering()
+        }
+        class "ParticleEffect" {
+            +spawnParticle()
+        }
+        class "SoundEffect" {
+            +playTeleportSound()
+            +playDetachSound()
+        }
+    }
+}
+
+"LastPosState" -* "HoverState"
+
+"SneakState" --o "SneakTracker"
+"HoverState" --o "HoverTracker"
+
+"HoverTracker" --> "HoverHandler"
+"SneakTracker" --> "HoverService"
+
+"HoverHandler" --> "HoverService"
+"UseItemBookHandler" --> "TeleportService"
+
+"HoverTrackerNotifier" -up-> "HoverTracker"
+
+"HoverService" <|. "PlayerHoverService"
+"PlayerHoverService" -up-> "HoverTrackerNotifier"
+"PlayerHoverService" --> "Physics"
+
+"TeleportService" <|. "TeleportAfterHoverService"
+"TeleportAfterHoverService" -> "HoverService"
+"TeleportAfterHoverService" --> "Physics"
+
+"PlayerHoverService" ..> "SoundEffect"
+"HoverHandler" o-- "ParticleEffect"
+
+"ValidateTrackPlayer" .o "HoverTracker"
+"ValidateTrackPlayer" .o "SneakTracker"
+
+@enduml

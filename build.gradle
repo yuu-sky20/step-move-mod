@@ -36,6 +36,10 @@ loom {
 		}
 	}
 
+//	mixin {
+//		add sourceSets.main, "stepmove.refmap.json"
+//	}
+
 }
 
 dependencies {

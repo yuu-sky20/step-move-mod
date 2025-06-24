@@ -1,6 +1,5 @@
 package com.ysk.stepmove.event.util;
 
-import com.ysk.stepmove.event.handler.HoverHandler;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;

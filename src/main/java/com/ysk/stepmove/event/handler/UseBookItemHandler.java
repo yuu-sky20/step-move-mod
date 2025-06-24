@@ -1,10 +1,8 @@
 package com.ysk.stepmove.event.handler;
 import com.ysk.stepmove.common.Result;
-import com.ysk.stepmove.event.service.HoverService;
 import com.ysk.stepmove.event.service.TeleportAfterHoverService;
 import com.ysk.stepmove.event.service.TeleportService;
 
-import com.ysk.stepmove.event.util.Physics;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;

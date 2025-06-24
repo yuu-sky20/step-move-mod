@@ -3,7 +3,6 @@ package com.ysk.stepmove.event.service;
 import com.ysk.stepmove.common.Result;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 public interface TeleportService {

@@ -14,23 +14,24 @@ public class Physics {
     private static final float TICK_PROGRESS = 1.0F;
     private static final float TELEPORT_OFFSET = 0.5f;
 
-    public static Result<String> teleportPlayer(@NotNull World world, @NotNull ServerPlayerEntity player) {
+    public static Result<Vec3d> teleportPlayer(@NotNull World world, @NotNull ServerPlayerEntity player) {
         try {
             Vec3d teleportPos = calcTeleportPos(world, player).getData();
             player.requestTeleport(teleportPos.x, teleportPos.y, teleportPos.z);
-            return Result.success(" Player teleported to: " + teleportPos);
+            return Result.success(teleportPos);
         } catch (Exception e) {
             return Result.failure("Failed to teleport player: " + e.getMessage());
         }
     }
 
-    public static Result<String> startHovering(@NotNull ServerPlayerEntity player) {
+    public static Result<Vec3d> startHovering(@NotNull ServerPlayerEntity player) {
         try {
             player.fallDistance = 0.0F;
             player.setNoGravity(true);
             player.setVelocity(Vec3d.ZERO);
             player.velocityModified = true;
-            return Result.success("Start player hovering.");
+            Vec3d playerPos = player.getPos();
+            return Result.success(playerPos);
         } catch (Exception e) {
             return Result.failure("Failed to start player hovering: " + e.getMessage());
         }
@@ -40,7 +41,7 @@ public class Physics {
         try {
             player.fallDistance = 0.0F;
             player.setNoGravity(false);
-            return Result.success("Stop player hovering.");
+            return Result.success("Success to stop player hovering.");
         } catch (Exception e) {
             return Result.failure("Failed to stop player hovering: " + e.getMessage());
         }

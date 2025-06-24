@@ -14,15 +14,6 @@ import java.util.UUID;
 public class HoverHandler {
     private static final HoverService hoverService = new PlayerHoverService();
 
-    public static Result<String> startHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId) {
-        try {
-            Result<String> result = hoverService.startHovering(player);
-            return Result.success("Start hovering player: " + playerId + ", " + result.getData());
-        } catch (Exception e) {
-            return Result.failure("Failed to start hovering player: " + e.getMessage());
-        }
-    }
-
     public static Result<String> stopHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId) {
         try {
             Result<String> result = hoverService.stopHovering(player);

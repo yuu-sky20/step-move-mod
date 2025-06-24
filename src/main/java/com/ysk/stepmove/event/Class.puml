@@ -44,7 +44,6 @@ package event {
             +register()
         }
         class "HoverHandler" {
-            +startHovering()
             +stopHovering()
             +updatePlayerStateOnHovering()
         }
@@ -95,7 +94,7 @@ package event {
 "HoverState" --o "HoverTracker"
 
 "HoverTracker" --> "HoverHandler"
-"SneakTracker" --> "HoverTrackerNotifier"
+"SneakTracker" --> "HoverService"
 
 "HoverHandler" --> "HoverService"
 "UseItemBookHandler" --> "TeleportService"
@@ -103,7 +102,7 @@ package event {
 "HoverTrackerNotifier" -up-> "HoverTracker"
 
 "HoverService" <|. "PlayerHoverService"
-"PlayerHoverService" --> "HoverTrackerNotifier"
+"PlayerHoverService" -up-> "HoverTrackerNotifier"
 "PlayerHoverService" --> "Physics"
 
 "TeleportService" <|. "TeleportAfterHoverService"

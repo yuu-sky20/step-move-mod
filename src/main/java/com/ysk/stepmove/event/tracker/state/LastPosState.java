@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LastPosState {
     // 移動してないとみなす座標誤差範囲
-    private static final double MAX_MOVE_DISTANCE = 0.1;
+    private static final double MAX_MOVE_DISTANCE = 1.0;
     // 最後に記録したプレイヤーの位置
     private Vec3d lastPos;
     // コンストラクタ

@@ -8,9 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public class HoverTrackerNotifier {
-    public static void notifyStartHovering(@NotNull ServerPlayerEntity player) {
+    public static void notifyStartHovering(@NotNull ServerPlayerEntity player, @NotNull Vec3d playerPos) {
         UUID playerId = player.getUuid();
-        Vec3d playerPos = player.getPos();
-        HoverTracker.trackMarkAsHovering(player, playerId, playerPos);
+        HoverTracker.trackMarkAsHovering(playerId, playerPos);
     }
 }

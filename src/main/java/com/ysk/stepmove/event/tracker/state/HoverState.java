@@ -18,8 +18,8 @@ public class HoverState extends LastPosState {
     }
 
     public void setHoveringState(@NotNull Vec3d nowPos) {
-        this.hoverState = State.HOVERING;
         setLastPos(nowPos);
+        this.hoverState = State.HOVERING;
     }
 
     public void setIdleState() {

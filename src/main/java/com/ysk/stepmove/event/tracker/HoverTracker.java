@@ -42,7 +42,7 @@ public class HoverTracker {
 
             updatePlayerStatusOnHovering(world, player, hoverState);
 
-            processPlayerMovedOnHovering(player, playerId, hoverState);
+            processPlayerMovedOnHovering(player, playerId);
         }
     }
 
@@ -66,23 +66,13 @@ public class HoverTracker {
 
     /**
      * プレイヤーをホバー状態としてマーキング
-     * @param player トラッキング対象のプレイヤー
      * @param playerId トラッキング対象のプレイヤーID
-     * @param playerNowPos トラッキング対象のプレイヤーの現在の空間座標
+     * @param playerPos ホバリング開始時のプレイヤーの空間座標
       */
-    public static void trackMarkAsHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId, Vec3d playerNowPos) {
+    public static void trackMarkAsHovering(@NotNull UUID playerId, @NotNull Vec3d playerPos) {
         HoverState hoverState = trackingPlayers.get(playerId);
-        hoverState.setHoveringState(playerNowPos);
+        hoverState.setHoveringState(playerPos);
         trackingPlayers.put(playerId, hoverState);
-
-        LOGGER.info("Tracker mark as hovering player: " + playerId + ", " + playerNowPos );
-
-        Result<String> result = HoverHandler.startHovering(player, playerId);
-        if (result.isFailure()) {
-            LOGGER.warning(result.getErrorMessage());
-        } else {
-            LOGGER.info(result.getData());
-        }
     }
 
     /**
@@ -111,34 +101,21 @@ public class HoverTracker {
      * 浮遊状態のプレイヤーが動いた際の処理
      * @param player トラッキング対象のプレイヤー
      * @param playerId トラッキング対象のプレイヤーID
-     * @param hoverState プレイヤーの浮遊状態
      */
-    private static void processPlayerMovedOnHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId, @NotNull HoverState hoverState) {
+    private static void processPlayerMovedOnHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId) {
         // プレイヤーの現在位置を取得
         Vec3d playerPos = player.getPos();
+        HoverState hoverState = trackingPlayers.get(playerId);
 
         if (hoverState.isPlayerMovedOnHovering(playerPos)) {
-            Result<String> result = tryStopHovering(player, playerId);
-            if (result.isFailure()) {
-                LOGGER.warning(result.getErrorMessage());
-            } else {
-                LOGGER.info(result.getData());
+            //プレイヤーの浮遊状態を解除する
+            try {
+                trackMarkAsIdle(playerId);
+                Result<String> result = HoverHandler.stopHovering(player, playerId);
+                LOGGER.info("Stop hovering: " + result.getData());
+            } catch (Exception e) {
+                LOGGER.warning("Failed to stop hovering: " + e.getMessage());
             }
-        }
-    }
-
-    /**
-     * プレイヤーの浮遊状態を解除する
-     * @param player トラッキング対象のプレイヤー
-     * @param playerId トラッキング対象のプレイヤーID
-     */
-    private static Result<String> tryStopHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId) {
-        try {
-            trackMarkAsIdle(playerId);
-            Result<String> result = HoverHandler.stopHovering(player, playerId);
-            return Result.success("Stop hovering: " + result.getData());
-        } catch (Exception e) {
-            return Result.failure("Failed to stop hovering: " + e.getMessage());
         }
     }
 }

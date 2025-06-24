@@ -1,92 +1,144 @@
 package com.ysk.stepmove.event.tracker;
-import com.ysk.stepmove.event.model.PlayerPosState;
-import com.ysk.stepmove.event.handler.HoverHandler;
 
-import com.ysk.stepmove.util.SoundEffectPlayer;
+import com.ysk.stepmove.common.Pair;
+import com.ysk.stepmove.common.Result;
+import com.ysk.stepmove.event.handler.HoverHandler;
+import com.ysk.stepmove.event.tracker.state.HoverState;
+import com.ysk.stepmove.event.tracker.common.ValidateTrackPlayer;
+
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class HoverTracker {
-    // ホバー状態のプレイヤーを管理（トラッキングのみ担当）
-    private static final Map<UUID, PlayerPosState> trackingPlayers = new HashMap<>();
+    // ホバー状態のプレイヤーを管理
+    private static final Map<UUID, HoverState> trackingPlayers = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(HoverTracker.class.getName());
 
-    // 毎tick呼ばれる処理
-    public static void tick(ServerWorld world) {
-        // プレイヤーごとに状態を確認
-        Iterator<Map.Entry<UUID, PlayerPosState>> it = trackingPlayers.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<UUID, PlayerPosState> entry = it.next();
-            UUID uuid = entry.getKey();
-            PlayerPosState playerPosState = entry.getValue();
+    /**
+     * 毎tickごとにサーバーワールド内のプレイヤーのホバー状態をトラッキング
+     * @param world トラッキング対象のワールド
+     */
+    public static void tick(@NotNull ServerWorld world) {
+        addNewPlayers(world);
+        // サーバー内にアクティブなプレイヤーがいればトラッキング
+        for (Map.Entry<UUID, HoverState> trackedPlayer : trackingPlayers.entrySet()) {
 
-            // プレイヤーが有効かどうか判定
-            ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(uuid);
-            if (!isValidPlayer(player)) {
-                // 無効なプレイヤーの処理
-                handleInvalidPlayer(player);
-                it.remove();
+            Result<Pair<ServerPlayerEntity, UUID>> result= ValidateTrackPlayer.validateTrackedPlayer(world, trackedPlayer);
+            if (result.isFailure()) {
+                removeInvalidPlayer(trackedPlayer.getKey());
                 continue;
             }
 
-            // プレイヤーが移動したかどうか判定
-            if (playerPosState.isPlayerMoved(player.getPos())) {
-                // 移動時の処理
-                handlePlayerMoved(player);
-                continue;
-            }
+            Pair<ServerPlayerEntity, UUID> resultPair = result.getData();
+            ServerPlayerEntity player = resultPair.getKey();
+            UUID playerId = resultPair.getValue();
+            HoverState hoverState = trackedPlayer.getValue();
 
-            // パーティクルを生成
-            spawnParticle(world, player);
+            updatePlayerStatusOnHovering(world, player, hoverState);
 
-            // プレイヤーの状態を更新
-            playerPosState.setLastPos(player.getPos());
+            processPlayerMovedOnHovering(player, playerId, hoverState);
         }
     }
 
-    // トラッキング開始
-    public static void startTracking(@NotNull UUID playerId, Vec3d lastPos) {
-        trackingPlayers.put(playerId, new PlayerPosState(lastPos));
+    /**
+     * 新規プレイヤーをセットに追加
+     * @param world 対象のサーバーワールド
+     */
+    private static void addNewPlayers(@NotNull ServerWorld world) {
+        for (var player : world.getPlayers()) {
+            trackingPlayers.putIfAbsent(player.getUuid(), new HoverState());
+        }
     }
 
-    // トラッキング終了
-    public static void stopTracking(@NotNull UUID playerId) {
+    /**
+     * 不正なプレイヤーをトラッキングから除外
+     * @param playerId 除外対象のプレイヤーID
+     */
+    private static void removeInvalidPlayer(@NotNull UUID playerId) {
         trackingPlayers.remove(playerId);
     }
 
-    // プレイヤーが有効かどうか判定
-    private static boolean isValidPlayer(ServerPlayerEntity player) {
-        return player != null && player.isAlive();
-    }
+    /**
+     * プレイヤーをホバー状態としてマーキング
+     * @param player トラッキング対象のプレイヤー
+     * @param playerId トラッキング対象のプレイヤーID
+     * @param playerNowPos トラッキング対象のプレイヤーの現在の空間座標
+      */
+    public static void trackMarkAsHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId, Vec3d playerNowPos) {
+        HoverState hoverState = trackingPlayers.get(playerId);
+        hoverState.setHoveringState(playerNowPos);
+        trackingPlayers.put(playerId, hoverState);
 
-    // 無効なプレイヤーの処理
-    private static void handleInvalidPlayer(ServerPlayerEntity player) {
-        if (player == null) return;
-        UUID playerId = player.getUuid();
+        LOGGER.info("Tracker mark as hovering player: " + playerId + ", " + playerNowPos );
 
-        HoverHandler.deleteState(player);
-        stopTracking(playerId);
-    }
-
-    // プレイヤーが移動した場合の処理
-    private static void handlePlayerMoved(@NotNull ServerPlayerEntity player) {
-        UUID playerId = player.getUuid();
-        // ホバー状態を解除
-        HoverHandler.detach(player);
-        // トラッキングを停止
-        stopTracking(playerId);
-        // ホバー解除時のサウンドを再生
-        SoundEffectPlayer.playDetachSound(player);
-    }
-
-    // ホバー中のパーティクルを生成
-    private static void spawnParticle(ServerWorld world, @NotNull ServerPlayerEntity player) {
-        if (!HoverHandler.isHovering(player.getUuid())) {
-            return; // プレイヤーがホバー中でない場合は何もしない
+        Result<String> result = HoverHandler.startHovering(player, playerId);
+        if (result.isFailure()) {
+            LOGGER.warning(result.getErrorMessage());
+        } else {
+            LOGGER.info(result.getData());
         }
-        HoverHandler.spawnHoverParticle(world, player);
+    }
+
+    /**
+     * プレイヤーをアイドル状態としてマーキング
+     * @param playerId トラッキング対象のプレイヤー
+     */
+    private static void trackMarkAsIdle(@NotNull UUID playerId) {
+        HoverState hoverState = trackingPlayers.get(playerId);
+        hoverState.setIdleState();
+        trackingPlayers.put(playerId, hoverState);
+    }
+
+    /**
+     * ホバリング中に毎回行われる更新処理
+     * @param world トラッキング対象のワールド
+     * @param player トラッキング対象のプレイヤー
+     * @param hoverState プレイヤーの浮遊状態
+     */
+    private static void updatePlayerStatusOnHovering(@NotNull ServerWorld world, @NotNull ServerPlayerEntity player, @NotNull HoverState hoverState) {
+        if (hoverState.isHoveringState()) {
+            HoverHandler.updatePlayerStatusOnHovering(world, player);
+        }
+    }
+
+    /**
+     * 浮遊状態のプレイヤーが動いた際の処理
+     * @param player トラッキング対象のプレイヤー
+     * @param playerId トラッキング対象のプレイヤーID
+     * @param hoverState プレイヤーの浮遊状態
+     */
+    private static void processPlayerMovedOnHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId, @NotNull HoverState hoverState) {
+        // プレイヤーの現在位置を取得
+        Vec3d playerPos = player.getPos();
+
+        if (hoverState.isPlayerMovedOnHovering(playerPos)) {
+            Result<String> result = tryStopHovering(player, playerId);
+            if (result.isFailure()) {
+                LOGGER.warning(result.getErrorMessage());
+            } else {
+                LOGGER.info(result.getData());
+            }
+        }
+    }
+
+    /**
+     * プレイヤーの浮遊状態を解除する
+     * @param player トラッキング対象のプレイヤー
+     * @param playerId トラッキング対象のプレイヤーID
+     */
+    private static Result<String> tryStopHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId) {
+        try {
+            trackMarkAsIdle(playerId);
+            Result<String> result = HoverHandler.stopHovering(player, playerId);
+            return Result.success("Stop hovering: " + result.getData());
+        } catch (Exception e) {
+            return Result.failure("Failed to stop hovering: " + e.getMessage());
+        }
     }
 }

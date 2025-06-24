@@ -1,4 +1,4 @@
-package com.ysk.stepmove.util;
+package com.ysk.stepmove.event.util;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -6,8 +6,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
-public class SoundEffectPlayer {
-    public static void playTransportSound(@NotNull ServerPlayerEntity player) {
+public class SoundEffect {
+    public static void playTeleportSound(@NotNull ServerPlayerEntity player) {
         ServerWorld world = (ServerWorld) player.getWorld();
         world.playSound(
                 null,

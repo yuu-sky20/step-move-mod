@@ -23,10 +23,10 @@ public class StepMoveMod implements ModInitializer {
 		ServerTickEvents.END_WORLD_TICK.register(world -> {
 			// サーバーがワールドを起動している間のみトラッキング
 			if (!world.isClient) {
-				// HoverTrackerのティックを実行
-				HoverTracker.tick(world);
 				// SneakTrackerのティックを実行
 				SneakTracker.tick(world);
+				// HoverTrackerのティックを実行
+				HoverTracker.tick(world);
 			}
 		});
 

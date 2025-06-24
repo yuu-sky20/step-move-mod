@@ -4,16 +4,21 @@ import com.ysk.stepmove.event.notifier.HoverTrackerNotifier;
 import com.ysk.stepmove.event.util.Physics;
 import com.ysk.stepmove.event.util.SoundEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerHoverService implements HoverService {
     @Override
     public Result<String> startHovering(@NotNull ServerPlayerEntity player) {
-        Result<Vec3d> result = Physics.startHovering(player);
-        Vec3d playerPos = result.getData();
-        HoverTrackerNotifier.notifyStartHovering(player, playerPos);
-        return Result.success("Start hovering player: " + playerPos);
+        HoverTrackerNotifier.notifyChanging(player);
+        Result<String> result;
+        try {
+            result = Physics.startHovering(player);
+        } catch (Exception e) {
+            return Result.failure("Failed to start hovering player: " + e.getMessage());
+        } finally {
+            HoverTrackerNotifier.notifyStartHovering(player);
+        }
+        return result;
     }
 
     @Override

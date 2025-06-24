@@ -20,6 +20,6 @@ public class LastPosState {
     protected boolean isPlayerMoved(@NotNull Vec3d nowPos) {
         // 誤差の範囲内なら成功とする
         Vec3d delta = nowPos.subtract(lastPos);
-        return !(delta.lengthSquared() < MAX_MOVE_DISTANCE);
+        return !(delta.horizontalLengthSquared() < MAX_MOVE_DISTANCE);
     }
 }

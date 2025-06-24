@@ -24,14 +24,23 @@ public class Physics {
         }
     }
 
-    public static Result<Vec3d> startHovering(@NotNull ServerPlayerEntity player) {
+    public static Result<Vec3d> teleportPlayerAbove(@NotNull ServerPlayerEntity player) {
+        try {
+            Vec3d teleportPos = player.getPos();
+            player.requestTeleport(teleportPos.x, teleportPos.y + 1.0, teleportPos.z);
+            return Result.success(teleportPos);
+        } catch (Exception e) {
+            return Result.failure("Failed to teleport player: " + e.getMessage());
+        }
+    }
+
+    public static Result<String> startHovering(@NotNull ServerPlayerEntity player) {
         try {
             player.fallDistance = 0.0F;
             player.setNoGravity(true);
             player.setVelocity(Vec3d.ZERO);
             player.velocityModified = true;
-            Vec3d playerPos = player.getPos();
-            return Result.success(playerPos);
+            return Result.success("Success to start player hovering.");
         } catch (Exception e) {
             return Result.failure("Failed to start player hovering: " + e.getMessage());
         }

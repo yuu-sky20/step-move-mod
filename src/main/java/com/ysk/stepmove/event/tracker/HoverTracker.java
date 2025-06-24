@@ -41,8 +41,15 @@ public class HoverTracker {
             HoverState hoverState = trackedPlayer.getValue();
 
             updatePlayerStatusOnHovering(world, player, hoverState);
-
+            applyHoverCommitChanged(player, playerId, hoverState);
             processPlayerMovedOnHovering(player, playerId);
+        }
+    }
+
+    private static void applyHoverCommitChanged(@NotNull ServerPlayerEntity player, @NotNull UUID playerId, @NotNull HoverState hoverState) {
+        Vec3d playerPos = player.getPos();
+        if (hoverState.applyCommitChanged(playerPos)) {
+            trackingPlayers.put(playerId, hoverState);
         }
     }
 
@@ -65,13 +72,28 @@ public class HoverTracker {
     }
 
     /**
-     * プレイヤーをホバー状態としてマーキング
+     * プレイヤーの状態を変更中にする
      * @param playerId トラッキング対象のプレイヤーID
-     * @param playerPos ホバリング開始時のプレイヤーの空間座標
-      */
-    public static void trackMarkAsHovering(@NotNull UUID playerId, @NotNull Vec3d playerPos) {
+     */
+    public static void toggleChangingState(@NotNull UUID playerId) {
         HoverState hoverState = trackingPlayers.get(playerId);
-        hoverState.setHoveringState(playerPos);
+        if (hoverState.isChangingState()) {
+            return;
+        }
+        hoverState.setChangingState();
+        trackingPlayers.put(playerId, hoverState);
+    }
+
+    /**
+     * プレイヤーをホバー状態としてコミット
+     * @param playerId トラッキング対象のプレイヤーID
+      */
+    public static void toggleCommitChangedState(@NotNull UUID playerId) {
+        HoverState hoverState = trackingPlayers.get(playerId);
+        if (hoverState.isCommitChangedState()) {
+            return;
+        }
+        hoverState.setCommitChanged();
         trackingPlayers.put(playerId, hoverState);
     }
 
@@ -104,8 +126,8 @@ public class HoverTracker {
      */
     private static void processPlayerMovedOnHovering(@NotNull ServerPlayerEntity player, @NotNull UUID playerId) {
         // プレイヤーの現在位置を取得
-        Vec3d playerPos = player.getPos();
         HoverState hoverState = trackingPlayers.get(playerId);
+        Vec3d playerPos = player.getPos();
 
         if (hoverState.isPlayerMovedOnHovering(playerPos)) {
             //プレイヤーの浮遊状態を解除する
